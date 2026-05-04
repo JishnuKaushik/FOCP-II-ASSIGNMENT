@@ -3,95 +3,97 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
-#include <algorithm> // for remove_if
+#include <algorithm>
 
 using namespace std;
 
-// Function to trim spaces from input
+// Trim spaces from input
 string trim(const string& str) {
     string result = str;
 
-    // Remove leading spaces
-    result.erase(result.begin(), find_if(result.begin(), result.end(), [](unsigned char ch) {
-        return !isspace(ch);
-    }));
+    result.erase(result.begin(), find_if(result.begin(), result.end(),
+        [](unsigned char ch) { return !isspace(ch); }));
 
-    // Remove trailing spaces
-    result.erase(find_if(result.rbegin(), result.rend(), [](unsigned char ch) {
-        return !isspace(ch);
-    }).base(), result.end());
+    result.erase(find_if(result.rbegin(), result.rend(),
+        [](unsigned char ch) { return !isspace(ch); }).base(), result.end());
 
     return result;
 }
 
-// Function to replace ALL occurrences of {name}
+// Replace ALL occurrences of {name}
 string personalizeRoast(string roast, const string& name) {
     size_t pos = 0;
-
     while ((pos = roast.find("{name}", pos)) != string::npos) {
         roast.replace(pos, 6, name);
-        pos += name.length(); // move forward
+        pos += name.length();
     }
-
     return roast;
 }
 
-// Function to get random roast
+// Get random roast
 string getRandomRoast(const vector<string>& roasts) {
-    int index = rand() % roasts.size();
-    return roasts[index];
+    return roasts[rand() % roasts.size()];
 }
 
 int main() {
-    srand(time(0)); // seed once
+    srand(time(0));
 
     vector<string> roasts = {
-        "{name} writes code so slow that even a turtle switched to Python.",
-        "{name}'s code has more bugs than a jungle.",
-        "{name} debugs by deleting the whole project.",
-        "{name} writes comments like they are writing a mystery novel.",
-        "{name}'s code works... but nobody knows why.",
-        "{name} uses Google more than their own brain.",
-        "{name}'s logic is so confusing even the compiler gets scared.",
-        "{name} writes code that even Stack Overflow refuses to answer.",
-        "{name}'s programs crash faster than they run.",
-        "{name} thinks semicolons are optional."
+        "{name} ka code dekh ke compiler bhi bolta hai: bhai mujhe maaf kar de.",
+        "{name}, tu code likhta kam hai, Stack Overflow zyada scroll karta hai.",
+        "{name} ka logic itna confusing hai ki debugger bhi resign kar gaya.",
+        "{name} ke bugs itne zyada hain ki unpe National Geographic documentary ban sakti hai.",
+        "{name}, tera code run hone se pehle hi crash ho jata hai... respect.",
+        "{name} likhta kuch aur hai, output aata kuch aur hai. Magic chal raha hai kya?",
+        "{name} ka coding speed dekh ke turtle ne bhi upgrade le liya.",
+        "{name}, tu semicolon ko optional maanta hai kya?",
+        "{name} ka code samajhne ke liye NASA se training leni padegi.",
+        "{name}, tu programmer kam, bug generator zyada lagta hai.",
+        "Sach bata {name}, tu code likhta hai ya random keys daba deta hai?",
+        "{name}, tera code dekh ke lagta hai Ctrl+C aur Ctrl+V hi tera asli skill hai.",
+        "{name}, agar coding ek sport hota, tu bench pe bhi select nahi hota.",
+        "{name}, tera code itna slow hai ki loading screen bhi bore ho jaati hai.",
+        "{name}, tu coding karta hai ya system ko torture karta hai?"
     };
 
     string name;
 
-    cout << "Enter your name: ";
+    cout << "🤖 Desi Roast Bot activated!\n";
+    cout << "Apna naam bata bhai: ";
     getline(cin, name);
 
-    // Trim spaces
     name = trim(name);
 
-    // Edge case check
     if (name.empty()) {
-        cout << "Name cannot be empty. Exiting...\n";
+        cout << "Naam toh daal deta bhai... system thodi mind reader hai 😑\n";
         return 0;
     }
 
-    char choice;
+    cout << "\nAcha " << name << ", ready ho thoda roast ke liye? 😏\n";
 
-    do {
-        // Get random roast
-        string roast = getRandomRoast(roasts);
+    string input;
 
-        // Personalize
-        string finalRoast = personalizeRoast(roast, name);
+    while (true) {
+        cout << "\nType 'roast' for burn 🔥, 'exit' to leave: ";
+        getline(cin, input);
 
-        cout << "\n🔥 Roast:\n" << finalRoast << endl;
+        input = trim(input);
 
-        // Ask if user wants another roast
-        cout << "\nWant another roast? (y/n): ";
-        cin >> choice;
-
-        cin.ignore(); // clear buffer
-
-    } while (choice == 'y' || choice == 'Y');
-
-    cout << "\nAlright, exiting. Stay roasted 😄\n";
+        if (input == "exit") {
+            cout << "\nTheek hai " << name << ", aaj ke liye itna hi. Practice kar coding 😄\n";
+            break;
+        }
+        else if (input == "roast") {
+            string roast = getRandomRoast(roasts);
+            cout << "\n🔥 " << personalizeRoast(roast, name) << "\n";
+        }
+        else if (input.empty()) {
+            cout << "Kuch toh type kar bhai... hawa nahi padh sakta main 😒\n";
+        }
+        else {
+            cout << "Samajh nahi aaya 😵‍💫. Sirf 'roast' ya 'exit' likh.\n";
+        }
+    }
 
     return 0;
 }
