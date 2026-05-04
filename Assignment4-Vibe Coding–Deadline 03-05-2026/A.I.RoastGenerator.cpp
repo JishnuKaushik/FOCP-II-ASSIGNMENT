@@ -1,40 +1,50 @@
-#include <iostream>   // For input and output
-#include <vector>     // For using vector (dynamic array)
-#include <cstdlib>    // For rand() and srand()
-#include <ctime>      // For time() function
-#include <string>     // For string handling
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <string>
+#include <algorithm> // for remove_if
 
 using namespace std;
 
-// Function to replace "{name}" in the roast with actual user name
-string personalizeRoast(string roast, string name) {
-    size_t pos = roast.find("{name}"); // Find position of placeholder
+// Function to trim spaces from input
+string trim(const string& str) {
+    string result = str;
 
-    // If placeholder exists, replace it
-    if (pos != string::npos) {
-        roast.replace(pos, 6, name); // 6 = length of "{name}"
+    // Remove leading spaces
+    result.erase(result.begin(), find_if(result.begin(), result.end(), [](unsigned char ch) {
+        return !isspace(ch);
+    }));
+
+    // Remove trailing spaces
+    result.erase(find_if(result.rbegin(), result.rend(), [](unsigned char ch) {
+        return !isspace(ch);
+    }).base(), result.end());
+
+    return result;
+}
+
+// Function to replace ALL occurrences of {name}
+string personalizeRoast(string roast, const string& name) {
+    size_t pos = 0;
+
+    while ((pos = roast.find("{name}", pos)) != string::npos) {
+        roast.replace(pos, 6, name);
+        pos += name.length(); // move forward
     }
 
     return roast;
 }
 
+// Function to get random roast
+string getRandomRoast(const vector<string>& roasts) {
+    int index = rand() % roasts.size();
+    return roasts[index];
+}
+
 int main() {
-    string name;
+    srand(time(0)); // seed once
 
-    // Ask user for input
-    cout << "Enter your name: ";
-    getline(cin, name); // getline handles full names with spaces
-
-    // Edge case: empty input
-    if (name.empty()) {
-        cout << "Name cannot be empty. Please run the program again.\n";
-        return 0; // Exit program
-    }
-
-    // Seed random number generator using current time
-    srand(time(0));
-
-    // Vector storing roast templates
     vector<string> roasts = {
         "{name} writes code so slow that even a turtle switched to Python.",
         "{name}'s code has more bugs than a jungle.",
@@ -48,18 +58,40 @@ int main() {
         "{name} thinks semicolons are optional."
     };
 
-    // Generate random index
-    int randomIndex = rand() % roasts.size();
+    string name;
 
-    // Get selected roast
-    string selectedRoast = roasts[randomIndex];
+    cout << "Enter your name: ";
+    getline(cin, name);
 
-    // Replace placeholder with actual name
-    string finalRoast = personalizeRoast(selectedRoast, name);
+    // Trim spaces
+    name = trim(name);
 
-    // Output result
-    cout << "\n🔥 Roast for you:\n";
-    cout << finalRoast << endl;
+    // Edge case check
+    if (name.empty()) {
+        cout << "Name cannot be empty. Exiting...\n";
+        return 0;
+    }
+
+    char choice;
+
+    do {
+        // Get random roast
+        string roast = getRandomRoast(roasts);
+
+        // Personalize
+        string finalRoast = personalizeRoast(roast, name);
+
+        cout << "\n🔥 Roast:\n" << finalRoast << endl;
+
+        // Ask if user wants another roast
+        cout << "\nWant another roast? (y/n): ";
+        cin >> choice;
+
+        cin.ignore(); // clear buffer
+
+    } while (choice == 'y' || choice == 'Y');
+
+    cout << "\nAlright, exiting. Stay roasted 😄\n";
 
     return 0;
 }
